@@ -2,11 +2,11 @@ FROM debian:trixie-slim
 
 LABEL maintainer="Ava Glass <Ava@4965.ninja>"
 
-# Versions of Nginx and nginx-rtmp-module to use
-ENV NGINX_VERSION=nginx-1.29.5
-ENV NGINX_RTMP_MODULE_VERSION=1.2.2
-ARG NGINX_SHA256="6744768a4114880f37b13a0443244e731bcb3130c0a065d7e37d8fd589ade374"
-ARG NGINX_RTMP_MODULE_SHA256="07f19b7bffec5e357bb8820c63e5281debd45f5a2e6d46b1636d9202c3e09d78"
+# Versions of Nginx and nginx-http-flv-module to use
+ENV NGINX_VERSION=nginx-1.31.9
+ENV NGINX_HTTP_FLV_MODULE_VERSION=1.2.15	
+ARG NGINX_SHA256="a11c5eeee2e257f4478f0e649f84b0040787d277d2d3e5233952aa6b6dcb80ad"
+ARG NGINX_HTTP_FLV_MODULE_SHA256="ac963f9802b9ec4cc00f1958526f17c1c17f26489604539138c7758985c797d4"
 
 # Install dependencies
 RUN apt-get update && \
@@ -46,16 +46,16 @@ RUN mkdir -p /tmp/build/nginx && \
     tar -zxf ${NGINX_VERSION}.tar.gz
 
 # Download and decompress RTMP module
-RUN mkdir -p /tmp/build/nginx-rtmp-module && \
-    cd /tmp/build/nginx-rtmp-module && \
-    wget -O nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION}.tar.gz https://github.com/arut/nginx-rtmp-module/archive/v${NGINX_RTMP_MODULE_VERSION}.tar.gz && \
-    if [ -n "${NGINX_RTMP_MODULE_SHA256}" ]; then \
-        echo "${NGINX_RTMP_MODULE_SHA256}  nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION}.tar.gz" | sha256sum -c -; \
+RUN mkdir -p /tmp/build/nginx-http-flv-module && \
+    cd /tmp/build/nginx-http-flv-module && \
+    wget -O nginx-http-flv-module-${NGINX_HTTP_FLV_MODULE_VERSION}.tar.gz https://github.com/winshining/nginx-http-flv-module/archive/v${NGINX_HTTP_FLV_MODULE_VERSION}.tar.gz && \
+    if [ -n "${NGINX_HTTP_FLV_MODULE_SHA256}" ]; then \
+        echo "${NGINX_HTTP_FLV_MODULE_SHA256}  nginx-http-flv-module-${NGINX_HTTP_FLV_MODULE_VERSION}.tar.gz" | sha256sum -c -; \
     else \
-        echo "NGINX_RTMP_MODULE_SHA256 not set; skipping source checksum verification"; \
+        echo "NGINX_HTTP_FLV_MODULE_SHA256 not set; skipping source checksum verification"; \
     fi && \
-    tar -zxf nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION}.tar.gz && \
-    cd nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION}
+    tar -zxf nginx-http-flv-module-${NGINX_HTTP_FLV_MODULE_VERSION}.tar.gz && \
+    cd nginx-http-flv-module-${NGINX_HTTP_FLV_MODULE_VERSION}
 
 # Build and install Nginx
 # The default puts everything under /usr/local/nginx, so it's needed to change
@@ -72,7 +72,7 @@ RUN cd /tmp/build/nginx/${NGINX_VERSION} && \
         --with-http_ssl_module \
         --with-http_stub_status_module \
         --with-threads \
-        --add-module=/tmp/build/nginx-rtmp-module/nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION} \
+        --add-module=/tmp/build/nginx-http-flv-module/nginx-http-flv-module-${NGINX_HTTP_FLV_MODULE_VERSION} \
         --with-debug \
         --with-cc-opt="-Wimplicit-fallthrough=0" && \
     make -j $(getconf _NPROCESSORS_ONLN) && \

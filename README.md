@@ -1,7 +1,7 @@
 # nginx-rtmp-recorder
 
 This project builds a Docker image that compiles NGINX from source with
-[`nginx-rtmp-module`](https://github.com/arut/nginx-rtmp-module) enabled and ships
+[`nginx-http-flv-module`](https://github.com/winshiningnginx-http-flv-module) enabled and ships
 an `nginx.conf` focused on recording incoming RTMP streams to disk.
 
 ## Runtime behavior
